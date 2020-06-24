@@ -29,4 +29,9 @@ public class Bookmark {
 		this.profileUrl = profileUrl;
 	}
 
+	@Override
+	public String toString() {
+		return "Bookmark [id=" + id + ", title=" + title + ", profileUrl=" + profileUrl + "]";
+	}
+
 }
