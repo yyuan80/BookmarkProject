@@ -1,6 +1,10 @@
 //Singleton Pattern
 package derek.bookmark.managers;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+
 import derek.bookmark.dao.BookmarkDao;
 import derek.bookmark.entities.Book;
 import derek.bookmark.entities.Bookmark;
@@ -8,6 +12,8 @@ import derek.bookmark.entities.Movie;
 import derek.bookmark.entities.User;
 import derek.bookmark.entities.UserBookmark;
 import derek.bookmark.entities.WebLink;
+import derek.bookmark.util.HttpConnect;
+import derek.bookmark.util.IOUtil;
 
 public class BookmarkManager {
 	private static BookmarkManager instance = new BookmarkManager();
@@ -67,6 +73,24 @@ public class BookmarkManager {
 		UserBookmark userBookmark = new UserBookmark();
 		userBookmark.setUser(user);
 		userBookmark.setBookmark(bookmark);
+		
+		if (bookmark instanceof WebLink) {
+			try {				
+				String url = ((WebLink)bookmark).getUrl();
+				if (!url.endsWith(".pdf")) {
+					String webpage = HttpConnect.download(((WebLink)bookmark).getUrl());
+					if (webpage != null) {
+						IOUtil.write(webpage, bookmark.getId());
+					}
+				}				
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		dao.saveUserBookmark(userBookmark);
 		
